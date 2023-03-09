@@ -1,11 +1,12 @@
 {
-  "name": "api-raw-sql",
+  "name": "books-api",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
     "dev": "nodemon src/server.ts",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "build": "tsc"
   },
   "devDependencies": {
     "@types/cors": "^2.8.13",
@@ -23,6 +24,7 @@
     "@prisma/client": "4.11.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "zod": "^3.21.4"
   }
 }
