@@ -1,11 +1,17 @@
 {
   "name": "books-api",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/server.js",
   "license": "MIT",
   "scripts": {
     "dev": "nodemon src/server.ts",
     "start": "node dist/server.js",
+    "migrate:dev": "npx prisma migrate dev --name",
+    "reset:dev": "npx prisma migrate reset",
+    "migrate:deploy": "npx prisma migrate deploy",
+    "studio": "npx prisma studio",
+    "lint": "eslint . --ext .ts",
+    "lint-fix": "eslint . --ext .ts --fix",
     "build": "tsc"
   },
   "devDependencies": {

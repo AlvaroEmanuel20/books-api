@@ -14,7 +14,6 @@
 	"plugins": ["@typescript-eslint"],
 	"rules": {
         "no-console": "warn",
-		"linebreak-style": ["error", "unix"],
 		"quotes": ["error", "double"],
 		"semi": ["error", "always"]
 	}

@@ -14,11 +14,36 @@ model Book {
   isbn        String    @id @db.VarChar(13)
   name        String    @unique
   description String
-  genre       String
-  author      String
+  genre       Genre     @relation(fields: [genreId], references: [id])
+  author      Author    @relation(fields: [authorId], references: [id])
+  language    Language
   publisher   String?
   pages       Int
   publishedAt DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  genreId     Int
+  authorId    Int
+}
+
+model Author {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Book      Book[]
+}
+
+model Genre {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Book      Book[]
+}
+
+enum Language {
+  PORTUGUESE
+  ENGLISH
+  SPANISH
 }
