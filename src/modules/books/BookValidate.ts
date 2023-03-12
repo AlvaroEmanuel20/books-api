@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export default class BookValidate {
-    show = z.object({
+    isbnParam = z.object({
         params: z.object({
             bookIsbn: z.string().length(13),
         }),
@@ -25,19 +25,13 @@ export default class BookValidate {
         body: z.object({
             name: z.string().optional(),
             description: z.string().max(1000).optional(),
-            genre: z.string(),
+            genre: z.string().optional(),
             author: z.string().optional(),
             language: z.enum(["PORTUGUESE", "ENGLISH", "SPANISH"]).optional(),
             publisher: z.string().optional(),
             pages: z.number().int().positive().optional(),
             publishedAt: z.date().optional(),
         }),
-        params: z.object({
-            bookIsbn: z.string().length(13),
-        }),
-    });
-
-    delete = z.object({
         params: z.object({
             bookIsbn: z.string().length(13),
         }),

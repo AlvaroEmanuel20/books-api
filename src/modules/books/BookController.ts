@@ -4,30 +4,62 @@ import DeleteBook from "./services/DeleteBook";
 import ListBooks from "./services/ListBooks";
 import ShowBook from "./services/ShowBook";
 import UpdateBook from "./services/UpdateBook";
+import { Language } from "@prisma/client";
+
+export interface CreateBookBody {
+    isbn: string;
+    name: string;
+    description: string;
+    genre: string;
+    author: string;
+    language: Language;
+    publisher?: string;
+    pages: number;
+    publishedAt?: Date;
+}
+
+export interface UpdateBookBody {
+    name?: string;
+    description?: string;
+    genre?: string;
+    author?: string;
+    language?: Language;
+    publisher?: string;
+    pages?: number;
+    publishedAt?: Date;
+}
 
 export default class BookController {
-    list(req: Request, res: Response) {
+    async list(req: Request, res: Response) {
         const listBooks = new ListBooks();
-        listBooks.execute(req, res);
+        res.json(await listBooks.execute());
     }
 
-    show(req: Request, res: Response) {
+    async show(req: Request, res: Response) {
+        const { bookIsbn } = req.params;
         const showBook = new ShowBook();
-        showBook.execute(req, res);
+        res.json(await showBook.execute(bookIsbn));
     }
 
-    create(req: Request, res: Response) {
+    async create(req: Request, res: Response) {
+        const data = req.body as CreateBookBody;
         const createBook = new CreateBook();
-        res.status(201).json(createBook.execute(req));
+        await createBook.execute(data);
+        res.sendStatus(201);
     }
 
-    update(req: Request, res: Response) {
+    async update(req: Request, res: Response) {
+        const { bookIsbn } = req.params;
+        const data = req.body as UpdateBookBody;
         const updateBook = new UpdateBook();
-        updateBook.execute(req, res);
+        await updateBook.execute(data, bookIsbn);
+        res.sendStatus(200);
     }
 
-    delete(req: Request, res: Response) {
+    async delete(req: Request, res: Response) {
+        const { bookIsbn } = req.params;
         const deleteBook = new DeleteBook();
-        deleteBook.execute(req, res);
+        await deleteBook.execute(bookIsbn);
+        res.sendStatus(200);
     }
 }

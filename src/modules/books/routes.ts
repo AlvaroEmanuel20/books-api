@@ -8,16 +8,24 @@ const bookController = new BookController();
 const bookValidate = new BookValidate();
 
 booksRoutes.get("/", bookController.list);
-booksRoutes.get("/:bookIsbn", validate(bookValidate.show), bookController.show);
+
+booksRoutes.get(
+    "/:bookIsbn",
+    validate(bookValidate.isbnParam),
+    bookController.show
+);
+
 booksRoutes.post("/", validate(bookValidate.create), bookController.create);
+
 booksRoutes.patch(
     "/:bookIsbn",
     validate(bookValidate.update),
     bookController.update
 );
+
 booksRoutes.delete(
     "/:bookIsbn",
-    validate(bookValidate.delete),
+    validate(bookValidate.isbnParam),
     bookController.delete
 );
 

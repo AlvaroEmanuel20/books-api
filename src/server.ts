@@ -1,10 +1,11 @@
 import express from "express";
+import "express-async-errors";
 import cors from "cors";
 import "dotenv/config";
 import router from "./routes/routes";
 import errors from "@middlewares/errors";
 
-const app = express();
+export const app = express();
 const PORT = process.env.PORT;
 
 app.use(cors());

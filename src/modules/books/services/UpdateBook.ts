@@ -1,47 +1,73 @@
-import { Request, Response } from "express";
-import { RequestBody } from "./CreateBook";
+import ApiError from "@lib/ApiError";
 import prisma from "@lib/prisma";
-import { Book } from "@prisma/client";
+import { UpdateBookBody } from "../BookController";
 
 export default class UpdateBook {
-    async execute(req: Request, res: Response) {
-        try {
-            const { bookIsbn } = req.params;
-            const {
-                name,
-                description,
-                genre,
-                author,
-                publisher,
-                pages,
-                publishedAt,
-            } = req.body as RequestBody;
+    async execute(data: UpdateBookBody, bookIsbn: string) {
+        const {
+            name,
+            description,
+            genre,
+            author,
+            publisher,
+            pages,
+            publishedAt,
+        } = data;
 
-            const bookExists = await prisma.$queryRaw<Book[]>`
-                SELECT name
-                FROM "Book"
-                WHERE isbn = ${bookIsbn}
-            `;
+        const bookExists = await prisma.book.findUnique({
+            where: { isbn: bookIsbn },
+        });
 
-            if (!bookExists || bookExists.length === 0)
-                return res.status(404).json({ msg: "Book not found" });
+        const nameExists = await prisma.book.findFirst({ where: { name } });
+
+        if (!bookExists) throw new ApiError("Book not found", 404);
+        if (nameExists) throw new ApiError("There are a book with this name");
+
+        if (genre) {
+            const genreExists = await prisma.genre.findFirst({
+                where: { name: genre },
+            });
+
+            const genreId = genreExists
+                ? genreExists.id
+                : (await prisma.genre.create({ data: { name: genre } })).id;
 
             await prisma.book.update({
                 where: { isbn: bookIsbn },
                 data: {
-                    name,
-                    description,
-                    genre,
-                    author,
-                    publisher,
-                    pages,
-                    publishedAt,
+                    genreId,
                 },
             });
-
-            res.status(200).json({ msg: "Updated", affectedRows: 1 });
-        } catch (error) {
-            res.status(500).json({ msg: "Internal server error" });
         }
+
+        if (author) {
+            const authorExists = await prisma.author.findFirst({
+                where: { name: author },
+            });
+
+            const authorId = authorExists
+                ? authorExists.id
+                : (await prisma.author.create({ data: { name: author } })).id;
+
+            await prisma.book.update({
+                where: { isbn: bookIsbn },
+                data: {
+                    authorId,
+                },
+            });
+        }
+
+        await prisma.book.update({
+            where: { isbn: bookIsbn },
+            data: {
+                name,
+                description,
+                publisher,
+                pages,
+                publishedAt,
+            },
+        });
+
+        return;
     }
 }

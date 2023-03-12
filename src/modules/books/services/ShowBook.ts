@@ -1,23 +1,27 @@
-import { Request, Response } from "express";
+import ApiError from "@lib/ApiError";
 import prisma from "@lib/prisma";
-import { Book } from "@prisma/client";
 
 export default class ShowBook {
-    async execute(req: Request, res: Response) {
-        try {
-            const { bookIsbn } = req.params;
-            const book = await prisma.$queryRaw<Book[]>`
-				SELECT *
-				FROM "Book"
-				WHERE isbn = ${bookIsbn}
-			`;
+    async execute(bookIsbn: string) {
+        const book = await prisma.book.findUnique({
+            where: { isbn: bookIsbn },
+            include: {
+                genre: {
+                    select: {
+                        name: true,
+                        id: true,
+                    },
+                },
+                author: {
+                    select: {
+                        name: true,
+                        id: true,
+                    },
+                },
+            },
+        });
 
-            if (!book || book.length === 0)
-                return res.status(404).json({ msg: "Book not found" });
-
-            res.json(book[0]);
-        } catch (error) {
-            res.status(500).json({ msg: "Internal server error" });
-        }
+        if (!book) throw new ApiError("Book not found", 404);
+        return book;
     }
 }
