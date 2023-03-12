@@ -15,6 +15,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/", router);
 app.use(errors);
 
-app.listen(PORT, () => {
+export const server = app.listen(PORT, () => {
     console.log(`Server is running in port ${PORT}`);
 });
